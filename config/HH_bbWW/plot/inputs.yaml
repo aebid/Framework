@@ -28,6 +28,7 @@
     - QCD
   title: QCD
   color: kCyan
+
 #- name: TTX
 #  title: TTX
 #  color: kCyan
@@ -52,6 +53,7 @@
    - GluGluToRadion_2L
   title: GluGlu2L800
   color: kRed
+
 #- name: GluGlutoRadiontoHHto2B2Vto2B2L2Nu_M-800
 #  title: GluGlu2L800
 #  color: kBlack
@@ -78,6 +80,7 @@
   #type: signal
   #color: kViolet
 
+
   #scale: 0.05
 #- name: VBFToBulkGraviton
 #  title: "qqHH #rightarrow bb#tau#tau BulkGraviton"
@@ -100,3 +103,4 @@
   types:
     - data
   type: data
+
