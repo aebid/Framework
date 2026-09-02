@@ -32,6 +32,12 @@ def ps_branch(source, scale):
     return f"weight_ps_{getSystName(source, scale)}"
 
 
+def pdf_branch(source, scale):
+    from Corrections.CorrectionsCore import getSystName
+
+    return f"weight_pdf_{getSystName(source, scale)}"
+
+
 def test_pileup_alone_reproduces_the_original_mapping():
     """With one producer the registry must reproduce what the old code built."""
     reg = ShapeWeightRegistry()
@@ -63,6 +69,40 @@ def test_second_producer_gets_the_cross_product():
         "weight_ps_Central",
     ]
     assert reg.sources == [central, "pu", "isr", "fsr"]
+
+
+def test_third_producer_extends_the_cross_product():
+    """Adding pdf must extend the products, not disturb the existing ones."""
+    reg = ShapeWeightRegistry()
+    reg.register("pu", ["pu"], pu_branch)
+    reg.register("parton_shower", ["isr", "fsr"], ps_branch)
+    reg.register("pdf", ["pdf"], pdf_branch)
+
+    assert reg.branches("pdf", up) == [
+        "weight_pu_Central",
+        "weight_ps_Central",
+        "weight_pdf_pdfUp",
+    ]
+    assert reg.branches("pdf", down) == [
+        "weight_pu_Central",
+        "weight_ps_Central",
+        "weight_pdf_pdfDown",
+    ]
+
+    # The existing sources gain the *central* pdf weight, which the producer defines as
+    # the literal 1.f. So the pileup and parton-shower denominators keep their value
+    # bit-identically -- multiplying by an IEEE-754 1.0f is the identity.
+    assert reg.branches("isr", up) == [
+        "weight_pu_Central",
+        "weight_ps_isrUp",
+        "weight_pdf_Central",
+    ]
+    assert reg.branches("pu", up) == [
+        "weight_pu_Up",
+        "weight_ps_Central",
+        "weight_pdf_Central",
+    ]
+    assert reg.sources == [central, "pu", "isr", "fsr", "pdf"]
 
 
 def test_no_variations_leaves_only_central():
